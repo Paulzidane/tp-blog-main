@@ -1,0 +1,49 @@
+version: '3'
+services:
+
+  comments:
+    build: ./comments
+    ports:
+      - "4001:4001"
+    environment:
+      - EVENTS_SERVICE_URL=http://events-service:4005
+
+  posts:
+    build: ./posts
+    ports:
+      - "4000:4000"
+    environment:
+      - EVENTS_SERVICE_URL=http://events-service:4005
+
+  events-service:
+    build: ./event-bus
+    ports:
+      - "4005:4005"
+    environment:
+      - POSTS_SERVICE_URL=http://posts:4000
+      - COMMENTS_SERVICE_URL=http://comments:4001
+      - QUERY_SERVICE_URL=http://query:4002
+      - MODERATION_SERVICE_URL=http://moderation:4003
+
+
+  query:
+    build: ./query
+    ports:
+      - "4002:4002"
+    environment:
+      - POSTS_SERVICE_URL=http://posts:4000
+      - COMMENTS_SERVICE_URL=http://comments:4001
+      - EVENTS_SERVICE_URL=http://events-service:4005
+
+  moderation:
+    build: ./moderation
+    ports:
+      - "4003:4003"
+    environment:
+      - EVENTS_SERVICE_URL=http://events-service:4005
+ 
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    
